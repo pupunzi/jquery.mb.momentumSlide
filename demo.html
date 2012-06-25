@@ -1,4 +1,15 @@
 <!DOCTYPE HTML>
+<!--
+  ~ jquery.mb.components
+  ~ Copyright (c) 2001-2012. Matteo Bicocchi (Pupunzi); Open lab srl, Firenze - Italy
+  ~ email: mbicocchi@open-lab.com
+  ~ site: http://pupunzi.com
+  ~
+  ~ Licences: MIT, GPL
+  ~ http://www.opensource.org/licenses/mit-license.php
+  ~ http://www.gnu.org/licenses/gpl.html
+  -->
+
 <html>
 <head>
 <title>mb.momentumSlide</title>
@@ -41,7 +52,7 @@
     padding: 10px;
     white-space: normal;
   }
-  img{
+  .page img{
     width: 150px;
     height: auto;
   }
@@ -159,6 +170,7 @@
     cursor: url("css/elements/grabbing.cur"),-moz-zoom-in;
   }
 
+
   @media only screen and (max-width : 480px) {
     #wrapper{
       position:absolute;
@@ -185,16 +197,26 @@
 <script>
   $(function(){
 
+    if (self.location.href == top.location.href){
+      var logo=$("<a id='pupunzi' href='http://pupunzi.com' style='position:fixed;bottom:40px;right:10px;z-index:1000'><img id='logo' border='0' src='http://pupunzi.com/images/logo.png' alt='mb.ideas.repository'></a>");
+      $("body").prepend(logo);
+      $("#logo").fadeIn();
+    }
+
+
     setTimeout(function(){window.scrollTo(0, 1);}, 0);
 
     $("#slider1").momentumSlide({
       direction:"h",
       waitBefore:10,
+      anchor:150,
       duration:600
     });
+
     $("#slider2").momentumSlide({
       direction:"v",
       waitBefore:10,
+      anchor:150,
       duration:600
     });
 
@@ -208,12 +230,19 @@
 
   <div id="slider1">
     <div class="page"><div class="pageContent">
+      <br>
+      <br>
+      <br>
+      <br>
+      <br>
       <h2>mb.momentumSlide</h2>
       <p>Take a look at this page on your mobile or tablet</p>
       <img src="http://qbox.it/qrcodeImage.jpeg?o=image%2Fjpeg&d=http://dl.dropbox.com/u/1976976/jquery.mb.momentumSlide/demo.html&e=L&t=0&m=0&s=10">
       <p>drag this page right to left...</p>
     </div></div>
+
     <div class="page" >
+
       <div id="slider2" class="pageContent" style="padding: 0">
         <div class="page"><div class="pageContent">
           <h2>Sub page 1</h2>
@@ -223,13 +252,15 @@
         <div class="page"><div class="pageContent">Sub page 3</div></div>
         <div class="page"><div class="pageContent">Sub page 4</div></div>
       </div>
+
       <div style="position: absolute; top:10px; right:10px;">
-        <button onclick="$('#slider2').momentumSlide('goto',4)" >goto 4</button>
+        <button onclick="$('#slider2').momentumSlide('goto',4)" >goto page 4</button>
         <button onclick="$('#slider2').momentumSlide('prev')" >prev</button>
         <button onclick="$('#slider2').momentumSlide('next')" >next</button>
       </div>
 
     </div>
+
     <div class="page"><div class="pageContent">page 3</div></div>
     <div class="page"><div class="pageContent">page 4</div></div>
     <div class="page"><div class="pageContent">page 5</div></div>

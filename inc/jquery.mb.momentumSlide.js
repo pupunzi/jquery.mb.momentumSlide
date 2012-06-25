@@ -3,12 +3,10 @@
  Copyright (c) 2001-2012. Matteo Bicocchi (Pupunzi); Open lab srl, Firenze - Italy
  email: mbicocchi@open-lab.com
  site: http://pupunzi.com
- blog: http://pupunzi.open-lab.com
 
  Licences: MIT, GPL
  http://www.opensource.org/licenses/mit-license.php
  http://www.gnu.org/licenses/gpl.html
-
  ******************************************************************************/
 
 /*
@@ -63,6 +61,7 @@ $.fn.CSSAnimate=function(a,b,h,i,e){return this.each(function(){var d=$(this);if
       direction:"h",
       waitBefore:100,
       propagate:true,
+      anchor:0,
       pagination:5,
       activateKeyboard:true,
       indexPlaceHolder:null,
@@ -85,7 +84,7 @@ $.fn.CSSAnimate=function(a,b,h,i,e){return this.each(function(){var d=$(this);if
       events.start = hasTouch ? "touchstart" : "mousedown";
       events.move = hasTouch ? "touchmove" : "mousemove";
       events.end = hasTouch ? "touchend" : "mouseup";
-      events.resize = hasTouch && isiOs ? "orientationchange" : "resize";
+      events.windowResize = hasTouch && isiOs ? "orientationchange" : "resize";
 
       var arg = arguments;
 
@@ -153,7 +152,7 @@ $.fn.CSSAnimate=function(a,b,h,i,e){return this.each(function(){var d=$(this);if
         $el.unbind(events.move+".mbMomentum_"+el.opt.id).bind(events.move+".mbMomentum_"+el.opt.id, function(e){$.mbMomentumSlide.move(e,el);});
         $(document).unbind(events.end+".mbMomentum_"+el.opt.id).bind(events.end+".mbMomentum_"+el.opt.id, function(){$.mbMomentumSlide.end(el);});
 
-        $(window).unbind(events.resize+".mbMomentum_"+el.opt.id).bind(events.resize+".mbMomentum_"+el.opt.id, function(){$.mbMomentumSlide.refresh(el);});
+        $(window).unbind(events.windowResize+".mbMomentum_"+el.opt.id).bind(events.windowResize+".mbMomentum_"+el.opt.id, function(){$.mbMomentumSlide.refresh(el);});
 
         if(el.opt.activateKeyboard)
           $(document).bind("keydown", function(e){
