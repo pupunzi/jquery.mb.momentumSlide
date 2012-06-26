@@ -221,15 +221,16 @@ $.fn.CSSAnimate=function(a,b,h,i,e){return this.each(function(){var d=$(this);if
     move:function(e,el){
 
       var margin= el.opt.direction == "h" ? parseFloat(el.container.css("margin-left")) : parseFloat(el.container.css("margin-top"));
+      var event= e;
+      if(el.hasTouch){
+        e = e.originalEvent;
+        e = e.touches[0];
+      }
+      event.preventDefault();
+
       if(el.canScroll){
         el.scrolling=true;
 
-        var event= e;
-        if(el.hasTouch){
-          e = e.originalEvent;
-          e = e.touches[0];
-        }
-        event.preventDefault();
 
         el.endX= e.clientX;
         el.endY= e.clientY;
