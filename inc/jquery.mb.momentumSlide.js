@@ -107,6 +107,9 @@ $.fn.CSSAnimate=function(a,b,h,i,e){return this.each(function(){var d=$(this);if
             case "refresh":
               $.mbMomentumSlide.refresh(el);
               break;
+            case "end":
+              $.mbMomentumSlide.end(el);
+              break;
           }
           return;
         }
@@ -228,6 +231,10 @@ $.fn.CSSAnimate=function(a,b,h,i,e){return this.each(function(){var d=$(this);if
         }
         event.preventDefault();
 
+        el.endX= e.clientX;
+        el.endY= e.clientY;
+        var condition = el.opt.direction == "h" ? Math.abs(el.startY - el.endY) : Math.abs(el.startX - el.endX);
+
         var dim = el.opt.direction == "h" ? el.w : el.h;
 
         var friction = margin>=0 || margin <= -dim ? 6:1;
@@ -239,29 +246,30 @@ $.fn.CSSAnimate=function(a,b,h,i,e){return this.each(function(){var d=$(this);if
             el.opt.onBounceStart(el);
             el.bounceStartCalled=true;
           }
-        }
-        if(margin < -(dim+10) && !el.bounceEndCalled){
-          if(typeof el.opt.onBounceEnd == "function"){
+        }else if(margin < -(dim+10) && !el.bounceEndCalled){
+          if(typeof el.opt.onBounceEnd === "function"){
             el.opt.onBounceEnd(el);
             el.bounceEndCalled=true;
           }
+        }else if(condition<el.opt.anchor && el.anchored){
+          event.stopPropagation();
+        }else{
+          el.anchored=false;
         }
 
-        el.endX= e.clientX;
-        el.endY= e.clientY;
         var css = el.opt.direction == "h" ? {"margin-left": el.startPosX-x} : {"margin-top": el.startPosY-y};
         el.container.css(css);
-
         if(typeof el.opt.onDrag == "function")
           el.opt.onDrag(el);
 
-        var condition = el.opt.direction == "h" ? Math.abs(el.startY - el.endY) : Math.abs(el.startX - el.endX);
 
+/*
         if(condition<el.opt.anchor && el.anchored){
           event.stopPropagation();
         }else{
           el.anchored=false;
         }
+*/
       }
     },
 
@@ -271,7 +279,7 @@ $.fn.CSSAnimate=function(a,b,h,i,e){return this.each(function(){var d=$(this);if
       clearTimeout(el.timer);
       el.canScroll=false;
       $el.removeClass("cursorGrabbing");
-      $el.clearUnselectable();
+      //$el.clearUnselectable();
 
       if (!el.scrolling)
         return;
@@ -299,6 +307,7 @@ $.fn.CSSAnimate=function(a,b,h,i,e){return this.each(function(){var d=$(this);if
         }
       }
       $.mbMomentumSlide.goTo(el,el.page+1);
+      el.anchored=false;
     },
 
     refresh:function(el){
@@ -349,6 +358,8 @@ $.fn.CSSAnimate=function(a,b,h,i,e){return this.each(function(){var d=$(this);if
       el.container.CSSAnimate(css,el.opt.duration, ease, "all", function(){
         if(typeof el.opt.onEnd == "function")
           el.opt.onEnd(el);
+
+        //$el.clearUnselectable()
       });
       if($(el.opt.indexPlaceHolder).length>0){
         $.mbMomentumSlide.buildIndex(el);
