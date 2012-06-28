@@ -216,6 +216,17 @@ $.fn.CSSAnimate=function(a,b,h,i,e){return this.each(function(){var d=$(this);if
 
       if(!el.opt.propagate)
         event.stopPropagation();
+
+
+      /*Check if the scrolling direction is the same of the component, otherwise user is doing something else*/
+      el.locked = false;
+      setTimeout(function(){
+        if(el.opt.direction == "h"){
+          el.locked = Math.abs(el.startY - el.endY) > 50;
+        }else if(el.opt.direction == "v"){
+          el.locked = Math.abs(el.startX - el.endX) > 50;
+        }
+      },300)
     },
 
     move:function(e,el){
@@ -228,12 +239,12 @@ $.fn.CSSAnimate=function(a,b,h,i,e){return this.each(function(){var d=$(this);if
       }
       event.preventDefault();
 
-      if(el.canScroll){
+      el.endX= e.clientX;
+      el.endY= e.clientY;
+
+      if(el.canScroll && ! el.locked){
         el.scrolling=true;
 
-
-        el.endX= e.clientX;
-        el.endY= e.clientY;
         var condition = el.opt.direction == "h" ? Math.abs(el.startY - el.endY) : Math.abs(el.startX - el.endX);
 
         var dim = el.opt.direction == "h" ? el.w : el.h;
@@ -263,14 +274,8 @@ $.fn.CSSAnimate=function(a,b,h,i,e){return this.each(function(){var d=$(this);if
         if(typeof el.opt.onDrag == "function")
           el.opt.onDrag(el);
 
-
-/*
-        if(condition<el.opt.anchor && el.anchored){
-          event.stopPropagation();
-        }else{
-          el.anchored=false;
-        }
-*/
+      }else{
+        $(el).momentumSlide("end");
       }
     },
 
@@ -280,7 +285,6 @@ $.fn.CSSAnimate=function(a,b,h,i,e){return this.each(function(){var d=$(this);if
       clearTimeout(el.timer);
       el.canScroll=false;
       $el.removeClass("cursorGrabbing");
-      //$el.clearUnselectable();
 
       if (!el.scrolling)
         return;
