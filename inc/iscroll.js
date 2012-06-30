@@ -203,7 +203,6 @@ iScroll.prototype = {
 				that[dir + 'ScrollbarWrapper'] = null;
 				that[dir + 'ScrollbarIndicator'] = null;
 			}
-
 			return;
 		}
 

@@ -88,7 +88,7 @@ $.fn.CSSAnimate=function(a,b,h,i,e){return this.each(function(){var d=$(this);if
 
       var arg = arguments;
 
-      return this.each(function(){
+      this.each(function(){
 
         var el= this;
         var $el= $(this);
@@ -142,9 +142,9 @@ $.fn.CSSAnimate=function(a,b,h,i,e){return this.each(function(){var d=$(this);if
 
         el.pages = $(el.container).children();
 
-        el.pages.each(function(){
+        el.pages.each(function(i){
           var css = el.opt.direction == "h" ? {display:"inline-block", width:$el.outerWidth()} : {display:"block", height:$el.outerHeight()};
-          $(this).css(css);
+          $(this).css(css).attr("data-idx",i);
           el.container.append($(this));
         });
 
@@ -192,7 +192,7 @@ $.fn.CSSAnimate=function(a,b,h,i,e){return this.each(function(){var d=$(this);if
         e = e.touches[0];
       }
 
-      $el.unselectable();
+      $("body").unselectable();
 
       el.timer = setTimeout(function() {
         el.canScroll=true;
@@ -217,16 +217,6 @@ $.fn.CSSAnimate=function(a,b,h,i,e){return this.each(function(){var d=$(this);if
       if(!el.opt.propagate)
         event.stopPropagation();
 
-
-      /*Check if the scrolling direction is the same of the component, otherwise user is doing something else*/
-      el.locked = false;
-      setTimeout(function(){
-        if(el.opt.direction == "h"){
-          el.locked = Math.abs(el.startY - el.endY) > 50;
-        }else if(el.opt.direction == "v"){
-          el.locked = Math.abs(el.startX - el.endX) > 50;
-        }
-      },300)
     },
 
     move:function(e,el){
@@ -239,8 +229,16 @@ $.fn.CSSAnimate=function(a,b,h,i,e){return this.each(function(){var d=$(this);if
       }
       event.preventDefault();
 
-      el.endX= e.clientX;
-      el.endY= e.clientY;
+      el.x = el.endX = e.clientX;
+      el.y = el.endY = e.clientY;
+
+      /*Check if the scrolling direction is the same of the component, otherwise user is doing something else*/
+      el.locked = false;
+      if(el.opt.direction == "h"){
+        el.locked = Math.abs(el.startY - el.endY) > Math.abs(el.startX - el.endX)+50;
+      }else if(el.opt.direction == "v"){
+        el.locked = Math.abs(el.startX - el.endX) > Math.abs(el.startY - el.endY)+50;
+      }
 
       if(el.canScroll && ! el.locked){
         el.scrolling=true;
@@ -274,9 +272,10 @@ $.fn.CSSAnimate=function(a,b,h,i,e){return this.each(function(){var d=$(this);if
         if(typeof el.opt.onDrag == "function")
           el.opt.onDrag(el);
 
-      }else{
+      }else if(el.locked){
         $(el).momentumSlide("end");
       }
+
     },
 
     end:function(el){
@@ -293,7 +292,7 @@ $.fn.CSSAnimate=function(a,b,h,i,e){return this.each(function(){var d=$(this);if
 
       el.pageW = $el.outerWidth();
       el.pageH = $el.outerHeight();
-      el.changePoint =  el.opt.direction == "h" ? el.pageW/3 : el.pageH/4;
+      el.changePoint =  el.opt.direction == "h" ? el.pageW/2 : el.pageH/2;
 
       var checkPageX = Math.abs(el.startX-el.endX)>el.changePoint && parseFloat(el.container.css("margin-left"))<0 && el.pages.eq(el.page).length>0;
       var checkPageY = Math.abs(el.startY-el.endY)>el.changePoint && parseFloat(el.container.css("margin-top"))<0 && el.pages.eq(el.page).length>0;
@@ -351,6 +350,7 @@ $.fn.CSSAnimate=function(a,b,h,i,e){return this.each(function(){var d=$(this);if
       else
         el.page=0;
 
+
       var pos= el.opt.direction == "h" ? -($el.outerWidth()*el.page) : -($el.outerHeight()*el.page);
       var css = el.opt.direction == "h" ? {marginLeft:pos} : {marginTop:pos};
 
@@ -364,7 +364,9 @@ $.fn.CSSAnimate=function(a,b,h,i,e){return this.each(function(){var d=$(this);if
         if(typeof el.opt.onEnd == "function")
           el.opt.onEnd(el);
 
-        //$el.clearUnselectable()
+        $("body").clearUnselectable();
+        el.locked=false;
+
       });
       if($(el.opt.indexPlaceHolder).length>0){
         $.mbMomentumSlide.buildIndex(el);
@@ -388,6 +390,16 @@ $.fn.CSSAnimate=function(a,b,h,i,e){return this.each(function(){var d=$(this);if
         idxContainer.append(indexEl);
       }
       $(".idxPage",indexBox).eq(el.page).addClass("sel");
+    },
+
+    getNextPage:function(el){
+      var page = el.pages.eq(el.page+1);
+      return page;
+    },
+
+    getPrevPage:function(el){
+      var page = el.pages.eq(el.page-1);
+      return page;
     }
 
   };
