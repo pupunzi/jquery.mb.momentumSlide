@@ -143,9 +143,13 @@ $.fn.CSSAnimate=function(a,b,h,i,e){return this.each(function(){var d=$(this);if
         el.pages = $(el.container).children();
 
         el.pages.each(function(i){
+          var wrapper = $("<div/>").addClass("pageContent");
+          $(this).wrapInner(wrapper);
+
           var css = el.opt.direction == "h" ? {display:"inline-block", width:$el.outerWidth()} : {display:"block", height:$el.outerHeight()};
           $(this).css(css).attr("data-idx",i);
           el.container.append($(this));
+          this.content = $(".pageContent",$(this)).get(0);
         });
 
         el.w=el.container.outerWidth(true) - el.pages.outerWidth();
@@ -175,6 +179,9 @@ $.fn.CSSAnimate=function(a,b,h,i,e){return this.each(function(){var d=$(this);if
 
         if(typeof el.opt.onInit == "function")
           el.opt.onInit(el);
+
+        $.mbMomentumSlide.goTo(el,1);
+
       })
     },
 
@@ -267,10 +274,12 @@ $.fn.CSSAnimate=function(a,b,h,i,e){return this.each(function(){var d=$(this);if
           el.anchored=false;
         }
 
+        var dir = el.opt.direction == "h" ? (x<0 ? "left" : "right") :(y<0 ? "top" :"bottom");
+
         var css = el.opt.direction == "h" ? {"margin-left": el.startPosX-x} : {"margin-top": el.startPosY-y};
         el.container.css(css);
         if(typeof el.opt.onDrag == "function")
-          el.opt.onDrag(el);
+          el.opt.onDrag(el, dir);
 
       }else if(el.locked){
         $(el).momentumSlide("end");
@@ -302,6 +311,7 @@ $.fn.CSSAnimate=function(a,b,h,i,e){return this.each(function(){var d=$(this);if
       if(changePage){
         var canMove = el.opt.direction == "h" ? el.endX<el.startX : el.endY<el.startY;
 
+        el.oldPage = el.pages.eq(el.page);
         if(canMove){
           if(el.pages.eq(el.page+1).length>0)
             el.page++;
@@ -350,6 +360,7 @@ $.fn.CSSAnimate=function(a,b,h,i,e){return this.each(function(){var d=$(this);if
       else
         el.page=0;
 
+      el.actualPage = el.pages[el.page];
 
       var pos= el.opt.direction == "h" ? -($el.outerWidth()*el.page) : -($el.outerHeight()*el.page);
       var css = el.opt.direction == "h" ? {marginLeft:pos} : {marginTop:pos};
@@ -361,6 +372,7 @@ $.fn.CSSAnimate=function(a,b,h,i,e){return this.each(function(){var d=$(this);if
 
 
       el.container.CSSAnimate(css,el.opt.duration, ease, "all", function(){
+
         if(typeof el.opt.onEnd == "function")
           el.opt.onEnd(el);
 

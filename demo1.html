@@ -67,18 +67,11 @@
     font: 24px/28px Arial, Helvetica, sans-serif;
   }
 
-  #slider1{
-    position:absolute;
+  .slider{
+    position:relative;
     white-space:nowrap;
     width:100%;
     height:100%;
-    overflow:hidden;
-  }
-
-  #slider2{
-    overflow: hidden;
-    width: 100%;
-    height: 100%;
   }
 
   .page{
@@ -89,35 +82,54 @@
     height:100%;
     -moz-box-sizing:border-box;
     box-sizing:border-box;
-    margin:0;
-    padding:5px;
     background: #fff;
   }
+
   .page .pageContent{
     width:100%;
     height:100%;
-
     -moz-box-sizing:border-box;
     box-sizing:border-box;
-
   }
 
+  .page .pageContent article{
+    padding: 30px;
+  }
+
+  .page .pageContent article.col{
+    min-height: 100%;
+    -moz-column-width: 250px;
+    -moz-column-gap: 20px;
+    -webkit-column-width: 250px;
+    -webkit-column-gap: 20px;
+    column-width: 250px;
+    column-gap: 20px;
+  }
 
   .page .pageContent .scroll{
-    padding:30px;
+    position: absolute;
+
   }
 
-  .page #slider2 .page{
-    padding:7px;
+  .page .pageContent .scroll h2{
+/*
+    -webkit-column-span:all;
+    column-span:all;
+*/
+    font-size: 50px;
+    line-height: 100%;
+    white-space: normal;
+    border-top: 6px solid #000;
+    border-bottom: 6px solid #000;
+    margin: 5px;
+
   }
+
   .page #slider2 .pageContent{
-    padding:30px;
-    width:100%;
-    height:100%;
 
     background: rgb(122,188,255);
 
-    box-shadow:0px 0px 6px rgba(0,0,0,0.4);
+    /*box-shadow:0px 0px 6px rgba(0,0,0,0.4);*/
     -moz-box-sizing:border-box;
     box-sizing:border-box;
 
@@ -155,7 +167,7 @@
     cursor: url("css/elements/grab.cur"),-moz-zoom-in;
   }
   .cursorGrabbing{
-    cursor: url("css/elements/grabbing.png"),-moz-zoom-in;
+    cursor: url("css/elements/grabbing.cur"),-moz-zoom-in;
   }
 
 
@@ -185,32 +197,57 @@
 <script>
   $(function(){
 
-    if (self.location.href == top.location.href){
-      var logo=$("<a id='pupunzi' href='http://pupunzi.com' style='position:fixed;bottom:40px;right:10px;z-index:1000'><img id='logo' border='0' src='http://pupunzi.com/images/logo.png' alt='mb.ideas.repository'></a>");
-      $("body").prepend(logo);
-      $("#logo").fadeIn();
-    }
+    /*
+     if (self.location.href == top.location.href){
+     var logo=$("<a id='pupunzi' href='http://pupunzi.com' style='position:fixed;top:5px;right:10px;z-index:1000'><img id='logo' border='0' src='http://pupunzi.com/images/logo.png' alt='mb.ideas.repository'></a>");
+     $("body").prepend(logo);
+     $("#logo").fadeIn();
+     }
+     */
 
     setTimeout(function(){window.scrollTo(0, 1);}, 0);
+
+
+    function scroll(el){
+
+      if(! $(el.content).children("article").length || $(el.content).children(".scroll").length )
+        return;
+
+      var scroll = $("<div/>").addClass("scroll");
+      $(el.content).find("article").wrap(scroll);
+      el.scroll = new iScroll(el.content,{hScroll:false, hScrollbar:false,vScrollbar:true})
+
+    }
 
     $("#slider1").momentumSlide({
       direction:"h",
       waitBefore:0,
       anchor:150,
-      duration:600,
+      duration:500,
       propagate:false,
       onInit:function(el){
-        setTimeout(function(){
-          $("#page1").data("pageScroll", new iScroll("page1",{hScroll:false, hScrollbar:false,vScrollbar:true}));
-        },1);
+        $("article", $(el)).hide();
+        $("article:first", $(el)).fadeIn();
+      },
+      onDrag:function(el,dir){
+
+        switch (dir){
+          case "right":
+            var nextPage= $.mbMomentumSlide.getNextPage(el).get(0);
+            $(nextPage).find("article").not(":visible").fadeIn(500);
+            break;
+
+          case "left":
+            var prevPage= $.mbMomentumSlide.getPrevPage(el).get(0);
+            $(prevPage).find("article").not(":visible").fadeIn(500);
+        }
       },
       onStart:function(el){
-        var page= $.mbMomentumSlide.getNextPage(el);
-        //console.debug("after  ",page)
-
       },
-      onEnd:function(el){
-       // console.debug($(el).momentumSlide("nextPage"));
+      onBeforeEnd:function(el){
+        $(el.oldPage).find("article").fadeOut(500);
+
+        scroll(el.actualPage)
       }
     });
 
@@ -218,65 +255,101 @@
       direction:"h",
       waitBefore:0,
       anchor:3000,
-      duration:600,
+      duration:500,
       onBounceStart:function(el){
         $(el).momentumSlide('end');
       },
       onBounceEnd:function(el){
         $(el).momentumSlide('end');
-      }
-    });
+      },
+      onStart:function(el){
+        var nextPage= $.mbMomentumSlide.getNextPage(el).get(0);
+        $(nextPage).find("article").fadeIn(500);
+        // scroll(nextPage);
 
+      },
+      onBeforeEnd:function(el){
+        $(el.actualPage.content).find("article").fadeIn();
+        scroll(el.actualPage)
+
+        var prevPage= $.mbMomentumSlide.getPrevPage(el).get(0);
+        $(prevPage).find("article").fadeOut(500);
+      }
+
+    });
   })
 </script>
-
 
 </head>
 <body>
 <div id="wrapper">
-  <div id="slider1">
-    <div class="page" >
-      <div id="page1"  class="pageContent">
-        <div class="scroll">
-          <h2>mb.momentumSlide</h2>
-          <p>Take a look at this page on your mobile or tablet</p>
-          <img style="width: 200px; height: 200px;" src="http://qbox.it/qrcodeImage.jpeg?o=image%2Fjpeg&d=http://dl.dropbox.com/u/1976976/jquery.mb.momentumSlide/demo.html&e=L&t=0&m=0&s=10" >
-          <p>drag this page right to left...</p>
-          <p>
-            Sed posuere consectetur est at lobortis. Aenean lacinia bibendum nulla sed consectetur. Cras mattis consectetur purus sit amet fermentum. Sed posuere consectetur est at lobortis. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Integer posuere erat a ante venenatis dapibus posuere velit aliquet.
-            Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Cras justo odio, dapibus ac facilisis in, egestas eget quam.
-            Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Donec sed odio dui. Donec sed odio dui. Etiam porta sem malesuada magna mollis euismod. Integer posuere erat a ante venenatis dapibus posuere velit aliquet.
-            Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Nullam quis risus eget urna mollis ornare vel eu leo. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
-            Sed posuere consectetur est at lobortis. Aenean lacinia bibendum nulla sed consectetur. Cras mattis consectetur purus sit amet fermentum. Sed posuere consectetur est at lobortis. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Integer posuere erat a ante venenatis dapibus posuere velit aliquet.
-            Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Cras justo odio, dapibus ac facilisis in, egestas eget quam.
-            Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Donec sed odio dui. Donec sed odio dui. Etiam porta sem malesuada magna mollis euismod. Integer posuere erat a ante venenatis dapibus posuere velit aliquet.
-            Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Nullam quis risus eget urna mollis ornare vel eu leo. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
-            Sed posuere consectetur est at lobortis. Aenean lacinia bibendum nulla sed consectetur. Cras mattis consectetur purus sit amet fermentum. Sed posuere consectetur est at lobortis. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Integer posuere erat a ante venenatis dapibus posuere velit aliquet.
-            Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Cras justo odio, dapibus ac facilisis in, egestas eget quam.
-            Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Donec sed odio dui. Donec sed odio dui. Etiam porta sem malesuada magna mollis euismod. Integer posuere erat a ante venenatis dapibus posuere velit aliquet.
-            Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Nullam quis risus eget urna mollis ornare vel eu leo. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
-            Sed posuere consectetur est at lobortis. Aenean lacinia bibendum nulla sed consectetur. Cras mattis consectetur purus sit amet fermentum. Sed posuere consectetur est at lobortis. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Integer posuere erat a ante venenatis dapibus posuere velit aliquet.
-            Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Cras justo odio, dapibus ac facilisis in, egestas eget quam.
-            Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Donec sed odio dui. Donec sed odio dui. Etiam porta sem malesuada magna mollis euismod. Integer posuere erat a ante venenatis dapibus posuere velit aliquet.
-            Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Nullam quis risus eget urna mollis ornare vel eu leo. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
-          </p>
-        </div>
-      </div>
+
+  <div id="slider1" class="slider">
+
+    <div class="page">
+
+      <article class="col">
+        <h2>mb momentum Slide</h2>
+        <p>Take a look at this page on your mobile or tablet</p>
+        <img style="width: 200px; height: 200px;" src="http://qbox.it/qrcodeImage.jpeg?o=image%2Fjpeg&d=http://dl.dropbox.com/u/1976976/jquery.mb.momentumSlide/demo.html&e=L&t=0&m=0&s=10" >
+        <p>drag this page right to left...</p>
+        <p>
+          Sed posuere consectetur est at lobortis. Aenean lacinia bibendum nulla sed consectetur. Cras mattis consectetur purus sit amet fermentum. Sed posuere consectetur est at lobortis. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Integer posuere erat a ante venenatis dapibus posuere velit aliquet.
+          Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Cras justo odio, dapibus ac facilisis in, egestas eget quam.
+          Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Donec sed odio dui. Donec sed odio dui. Etiam porta sem malesuada magna mollis euismod. Integer posuere erat a ante venenatis dapibus posuere velit aliquet.
+          Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Nullam quis risus eget urna mollis ornare vel eu leo. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
+          Sed posuere consectetur est at lobortis. Aenean lacinia bibendum nulla sed consectetur. Cras mattis consectetur purus sit amet fermentum. Sed posuere consectetur est at lobortis. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Integer posuere erat a ante venenatis dapibus posuere velit aliquet.
+          Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Cras justo odio, dapibus ac facilisis in, egestas eget quam.
+          Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Donec sed odio dui. Donec sed odio dui. Etiam porta sem malesuada magna mollis euismod. Integer posuere erat a ante venenatis dapibus posuere velit aliquet.
+          Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Nullam quis risus eget urna mollis ornare vel eu leo. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
+          Sed posuere consectetur est at lobortis. Aenean lacinia bibendum nulla sed consectetur. Cras mattis consectetur purus sit amet fermentum. Sed posuere consectetur est at lobortis. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Integer posuere erat a ante venenatis dapibus posuere velit aliquet.
+          Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Cras justo odio, dapibus ac facilisis in, egestas eget quam.
+          Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Donec sed odio dui. Donec sed odio dui. Etiam porta sem malesuada magna mollis euismod. Integer posuere erat a ante venenatis dapibus posuere velit aliquet.
+          Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Nullam quis risus eget urna mollis ornare vel eu leo. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
+          Sed posuere consectetur est at lobortis. Aenean lacinia bibendum nulla sed consectetur. Cras mattis consectetur purus sit amet fermentum. Sed posuere consectetur est at lobortis. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Integer posuere erat a ante venenatis dapibus posuere velit aliquet.
+          Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Cras justo odio, dapibus ac facilisis in, egestas eget quam.
+          Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Donec sed odio dui. Donec sed odio dui. Etiam porta sem malesuada magna mollis euismod. Integer posuere erat a ante venenatis dapibus posuere velit aliquet.
+          Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Nullam quis risus eget urna mollis ornare vel eu leo. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
+        </p>
+      </article>
+
     </div>
 
     <div class="page" >
+      <div id="slider2" class="slider" >
 
-      <div id="slider2" class="pageContent" style="padding: 0">
         <div class="page">
-          <div class="pageContent">
-            <h2>Sub page 1</h2>
-            <p>drag this page bottom to top...</p>
-          </div>
+          <article class="col">
+            <h2>Section</h2>
+            <p>Take a look at this page on your mobile or tablet</p>
+            <img style="width: 200px; height: 200px;" src="http://qbox.it/qrcodeImage.jpeg?o=image%2Fjpeg&d=http://dl.dropbox.com/u/1976976/jquery.mb.momentumSlide/demo.html&e=L&t=0&m=0&s=10" >
+            <p>drag this page right to left...</p>
+            <p>
+              Sed posuere consectetur est at lobortis. Aenean lacinia bibendum nulla sed consectetur. Cras mattis consectetur purus sit amet fermentum. Sed posuere consectetur est at lobortis. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Integer posuere erat a ante venenatis dapibus posuere velit aliquet.
+              Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Cras justo odio, dapibus ac facilisis in, egestas eget quam.
+              Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Donec sed odio dui. Donec sed odio dui. Etiam porta sem malesuada magna mollis euismod. Integer posuere erat a ante venenatis dapibus posuere velit aliquet.
+              Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Nullam quis risus eget urna mollis ornare vel eu leo. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
+              Sed posuere consectetur est at lobortis. Aenean lacinia bibendum nulla sed consectetur. Cras mattis consectetur purus sit amet fermentum. Sed posuere consectetur est at lobortis. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Integer posuere erat a ante venenatis dapibus posuere velit aliquet.
+              Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Cras justo odio, dapibus ac facilisis in, egestas eget quam.
+              Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Donec sed odio dui. Donec sed odio dui. Etiam porta sem malesuada magna mollis euismod. Integer posuere erat a ante venenatis dapibus posuere velit aliquet.
+              Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Nullam quis risus eget urna mollis ornare vel eu leo. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
+              Sed posuere consectetur est at lobortis. Aenean lacinia bibendum nulla sed consectetur. Cras mattis consectetur purus sit amet fermentum. Sed posuere consectetur est at lobortis. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Integer posuere erat a ante venenatis dapibus posuere velit aliquet.
+              Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Cras justo odio, dapibus ac facilisis in, egestas eget quam.
+              Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Donec sed odio dui. Donec sed odio dui. Etiam porta sem malesuada magna mollis euismod. Integer posuere erat a ante venenatis dapibus posuere velit aliquet.
+              Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Nullam quis risus eget urna mollis ornare vel eu leo. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
+              Sed posuere consectetur est at lobortis. Aenean lacinia bibendum nulla sed consectetur. Cras mattis consectetur purus sit amet fermentum. Sed posuere consectetur est at lobortis. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Integer posuere erat a ante venenatis dapibus posuere velit aliquet.
+              Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Cras justo odio, dapibus ac facilisis in, egestas eget quam.
+              Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Donec sed odio dui. Donec sed odio dui. Etiam porta sem malesuada magna mollis euismod. Integer posuere erat a ante venenatis dapibus posuere velit aliquet.
+              Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Nullam quis risus eget urna mollis ornare vel eu leo. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
+            </p>
+          </article>
         </div>
-        <div class="page"><div class="pageContent"><div class="scroll"> Sub page 2</div></div></div>
-        <div class="page"><div class="pageContent"><div class="scroll"> Sub page 3</div></div></div>
-        <div class="page"><div class="pageContent"><div class="scroll"> Sub page 4</div></div></div>
+
+        <div class="page"><article>Sub page 2</article></div>
+        <div class="page"><article>Sub page 3</article></div>
+        <div class="page"><article>Sub page 4</article></div>
       </div>
+
 
       <div style="position: absolute; top:10px; right:10px;">
         <button onclick="$('#slider2').momentumSlide('goto',4)" > go to page 4</button>
@@ -286,10 +359,10 @@
 
     </div>
 
-    <div class="page"><div class="pageContent"><div class="scroll"> page 3</div></div></div>
-    <div class="page"><div class="pageContent"><div class="scroll"> page 4</div></div></div>
-    <div class="page"><div class="pageContent"><div class="scroll"> page 5</div></div></div>
-    <div class="page"><div class="pageContent"><div class="scroll"> page 6</div></div></div>
+    <div class="page"><article> page 3</article></div>
+    <div class="page"><article> page 4</article></div>
+    <div class="page"><article> page 5</article></div>
+    <div class="page"><article> page 6</article></div>
   </div>
 
   <div id="commands" style="position: absolute; bottom:10px; left:10px;">
