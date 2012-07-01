@@ -234,19 +234,17 @@
         switch (dir){
           case "right":
             var nextPage= $.mbMomentumSlide.getNextPage(el).get(0);
-            $(nextPage).find("article").not(":visible").fadeIn(500);
+            $(nextPage).find("article:first").not(":visible").fadeIn(1000);
             break;
 
           case "left":
             var prevPage= $.mbMomentumSlide.getPrevPage(el).get(0);
-            $(prevPage).find("article").not(":visible").fadeIn(500);
+            $(prevPage).find("article:first").not(":visible").fadeIn(1000);
         }
       },
-      onStart:function(el){
-      },
+      onStart:function(el){},
       onBeforeEnd:function(el){
-        $(el.oldPage).find("article").fadeOut(500);
-
+        $(el.oldPage).find("article:first").fadeOut();
         scroll(el.actualPage)
       }
     });
@@ -254,26 +252,35 @@
     $("#slider2").momentumSlide({
       direction:"h",
       waitBefore:0,
-      anchor:3000,
+      anchor:300,
       duration:500,
+      onInit:function(el){
+        $("article", $(el)).hide();
+        $("article:first", $(el)).fadeIn();
+      },
       onBounceStart:function(el){
         $(el).momentumSlide('end');
       },
       onBounceEnd:function(el){
         $(el).momentumSlide('end');
+      },onDrag:function(el,dir){
+
+        switch (dir){
+          case "right":
+            var nextPage= $.mbMomentumSlide.getNextPage(el).get(0);
+            $(nextPage).find("article:first").not(":visible").fadeIn(1000);
+            break;
+
+          case "left":
+            var prevPage= $.mbMomentumSlide.getPrevPage(el).get(0);
+            $(prevPage).find("article:first").not(":visible").fadeIn(1000);
+        }
       },
       onStart:function(el){
-        var nextPage= $.mbMomentumSlide.getNextPage(el).get(0);
-        $(nextPage).find("article").fadeIn(500);
-        // scroll(nextPage);
-
       },
       onBeforeEnd:function(el){
-        $(el.actualPage.content).find("article").fadeIn();
+        $(el.oldPage).find("article:first").fadeOut();
         scroll(el.actualPage)
-
-        var prevPage= $.mbMomentumSlide.getPrevPage(el).get(0);
-        $(prevPage).find("article").fadeOut(500);
       }
 
     });

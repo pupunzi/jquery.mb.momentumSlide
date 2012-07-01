@@ -312,6 +312,7 @@ $.fn.CSSAnimate=function(a,b,h,i,e){return this.each(function(){var d=$(this);if
         var canMove = el.opt.direction == "h" ? el.endX<el.startX : el.endY<el.startY;
 
         el.oldPage = el.pages.eq(el.page);
+
         if(canMove){
           if(el.pages.eq(el.page+1).length>0)
             el.page++;
