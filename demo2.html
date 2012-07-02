@@ -79,12 +79,14 @@
       author:"Matteo Bicocchi",
       version:"1.0",
       defaults:{
-        firstpageTempl:"tmplHome.html",
-        templ:"",
+        tmpls:["tmplHome.html","tmpl.html"],
         contentTag:"[data-role='content']"
       },
       init:function(){
-
+        var that = this.get(0);
+        that.txt= $(that).html();
+      },
+      loadTemplates:function(tmpl,callback){
 
       }
     };
@@ -105,21 +107,21 @@
     var pos=0;
     var lastPos=0;
 
-    var temp;
     var t=$("#test");
     var vacca=$("#vacca");
+    var temp=$("<div/>");
 
     var strVacca="";
 
-    t.html(testo);
-    t.find("h1,h2,h3,h4,b,i,span").each(function(){
+    temp.html(testo);
+    temp.find("h1,h2,h3,h4,b,i,span").each(function(){
       var txt = this.outerHTML;
       txt = txt.replace(/ /g,"-##-");
       this.outerHTML = txt;
     });
+    testo = temp.html();
+    temp.remove();
 
-    testo = t.html();
-    t.empty();
     var page = 1;
     while (pos>=0){
       pos=testo.indexOf(" ",pos+1);
@@ -127,13 +129,16 @@
         var w=testo.substr(lastPos,pos-lastPos+1);
         w = w.replace(/-##-/g," ");
         t.append(w);
-        //se non c'entra add a page
+
+
+        //add a new page
         if (t.outerHeight()<t.get(0).scrollHeight || t.outerWidth()<t.get(0).scrollWidth){
           pos=lastPos;
           var p=vacca.clone();
           p.append(strVacca);
           $("body").append("page "+page);
           page++;
+
           $("body").append(p);
           t.empty();
           strVacca="";
@@ -146,12 +151,14 @@
       }
     }
 
-    //add il rimasugl
+    //add what remains
     $("body").append("page "+page);
     vacca.append(strVacca)
     $("body").append(vacca);
 
   });
+
+
 </script>
 
 

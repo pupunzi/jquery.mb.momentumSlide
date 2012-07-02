@@ -308,10 +308,10 @@ $.fn.CSSAnimate=function(a,b,h,i,e){return this.each(function(){var d=$(this);if
 
       var changePage= el.opt.direction == "h" ? checkPageX : checkPageY;
 
+      el.oldPage = el.page;
+
       if(changePage){
         var canMove = el.opt.direction == "h" ? el.endX<el.startX : el.endY<el.startY;
-
-        el.oldPage = el.pages.eq(el.page);
 
         if(canMove){
           if(el.pages.eq(el.page+1).length>0)
@@ -321,6 +321,10 @@ $.fn.CSSAnimate=function(a,b,h,i,e){return this.each(function(){var d=$(this);if
             el.page--;
         }
       }
+
+      if(el.page != el.oldPage)
+        el.oldPage = el.pages.eq(el.oldPage);
+
       $.mbMomentumSlide.goTo(el,el.page+1);
       el.anchored=false;
     },
@@ -384,7 +388,6 @@ $.fn.CSSAnimate=function(a,b,h,i,e){return this.each(function(){var d=$(this);if
       if($(el.opt.indexPlaceHolder).length>0){
         $.mbMomentumSlide.buildIndex(el);
       }
-
     },
 
     buildIndex:function(el){

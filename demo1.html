@@ -230,7 +230,6 @@
         $("article:first", $(el)).fadeIn();
       },
       onDrag:function(el,dir){
-
         switch (dir){
           case "right":
             var nextPage= $.mbMomentumSlide.getNextPage(el).get(0);
@@ -244,7 +243,8 @@
       },
       onStart:function(el){},
       onBeforeEnd:function(el){
-        $(el.oldPage).find("article:first").fadeOut();
+        if (el.oldPage)
+          $(el.oldPage).find("article:first").fadeOut();
         scroll(el.actualPage)
       }
     });
@@ -279,7 +279,8 @@
       onStart:function(el){
       },
       onBeforeEnd:function(el){
-        $(el.oldPage).find("article:first").fadeOut();
+        if (el.oldPage)
+          $(el.oldPage).find("article:first").fadeOut();
         scroll(el.actualPage)
       }
 
