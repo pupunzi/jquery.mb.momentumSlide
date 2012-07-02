@@ -1,3 +1,14 @@
+<!--
+  ~ jquery.mb.components
+  ~ Copyright (c) 2001-2012. Matteo Bicocchi (Pupunzi); Open lab srl, Firenze - Italy
+  ~ email: mbicocchi@open-lab.com
+  ~ site: http://pupunzi.com
+  ~
+  ~ Licences: MIT, GPL
+  ~ http://www.opensource.org/licenses/mit-license.php
+  ~ http://www.gnu.org/licenses/gpl.html
+  -->
+
 <html>
 <head>
   <title>mb.momentumSlide</title>
@@ -17,6 +28,7 @@
 
     body {
       background-color:white;
+      font-family: serif;
     }
 
     .multicolumn3 {
@@ -31,7 +43,7 @@
       column-width: 150px;
       -webkit-column-width: 150px;
 
-      font-size: 35px;
+      font-size: 22px;
       line-height: 45px;
       border:2px solid white;
       box-sizing: border-box;
@@ -39,16 +51,16 @@
 
     }
     .multicolumn2 {
-      -moz-column-count: 3;
-      column-count: 3;
-      -webkit-column-count: 3;
+      -moz-column-count: 2;
+      column-count: 2;
+      -webkit-column-count: 2;
 
       column-gap: 10px;
       -moz-column-gap: 10px;
       -webkit-column-gap: 10px;
 
-      font-size: 35px;
-      line-height: 45px;
+      font-size: 20px;
+      line-height: 22px;
 
       border:2px solid white;
       box-sizing: border-box;
@@ -80,29 +92,60 @@
       version:"1.0",
       defaults:{
         tmpls:["tmplHome.html","tmpl.html"],
-        contentTag:"[data-role='content']"
+        contentTag:"[data-role='content']",
+        pageBreak:"!break!"
       },
-      init:function(){
+      init:function(opt){
         var that = this.get(0);
         that.txt= $(that).html();
+        that.opt = {};
+        $.extend (that.opt, $.textToPages.defaults,opt);
+
       },
       loadTemplates:function(tmpl,callback){
+        var tot = tmpl.length;
+        var count=0;
+
+        for (var i in tmpl){
+
+          var request = $.ajax({
+            url: tmpl[0],
+            type: "GET",
+            data: {},
+            cache:false,
+            dataType: "html"
+          });
+
+          request.done(function(resp) {
+            count++;
+
+
+          });
+
+          request.fail(function(jqXHR, textStatus) {
+
+          });
+        }
 
       }
     };
 
     $.fn.textTopages = $.textToPages.init;
 
+    String.prototype.asId = function () {
+      return this.replace(/[^a-zA-Z0-9_]+/g, '');
+    };
+
   })(jQuery);
 
 
   $(function() {
 
-    var testo="Nel mezzo del cammin di nostra vita mi ritrovai per una selva oscura ché la <h1 style='color:red'> diritta via <i style='color:black'>era smarrita.</i></h1> Ahi quanto a <b>dir qual era è cosa dura esta selva selvaggia</b> e aspra e forte che nel pensier rinova la paura! Tant'è amara che poco è più morte; ma per trattar del ben ch'i' vi trovai, dirò de l'altre <b>cose ch'i' v'ho scorte. Io non so ben ridir com'i' v'intrai, tant'era pien di sonno a quel punto che la verace via abbandonai.</b> Ma poi ch'i' fui al piè d'un colle giunto, là dove terminava quella valle che m'avea di paura il cor compunto, guardai in alto, e vidi le sue spalle vestite già de' raggi del pianeta che mena dritto altrui per ogne calle. Allor fu la paura un poco queta che nel lago del cor m'era durata la notte ch'i' passai con tanta pieta. E come quei che con lena affannata uscito fuor del pelago a la riva si volge a l'acqua perigliosa e guata, così l'animo mio, ch'ancor fuggiva, si volse a retro a rimirar lo passo che non lasciò già mai persona viva. Poi ch'èi posato un poco il corpo lasso, ripresi via per la piaggia diserta, sì che 'l piè fermo sempre era 'l più basso. Ed ecco, quasi al cominciar de l'erta, una lonza leggera e presta molto, che di pel macolato era coverta; e non mi si partia dinanzi al volto, anzi 'mpediva tanto il mio cammino, ch'i' fui per ritornar più volte vòlto. Temp'era dal principio del mattino, e 'l sol montava 'n sù con quelle stelle ch'eran con lui quando l'amor divino mosse di prima quelle cose belle; sì ch'a bene sperar m'era cagione di quella fiera a la gaetta pelle l'ora del tempo e la dolce stagione;"
+    var testo="Nel mezzo del cammin di nostra vita mi ritrovai per una selva oscura ché la <h1 style='color:red'> diritta via <i style='color:black'>era smarrita.</i></h1> !break! Ahi quanto a <b>dir qual era è cosa dura esta selva selvaggia</b>  e aspra e forte che nel pensier rinova la paura! Tant'è amara che poco è più morte; ma per trattar del ben ch'i' vi trovai, dirò de l'altre <b>cose ch'i' v'ho scorte. Io non so ben ridir com'i' v'intrai, tant'era pien di sonno a quel punto che la verace via abbandonai.</b> Ma poi ch'i' fui al piè d'un colle giunto, là dove terminava quella valle che m'avea di paura il cor compunto, guardai in alto, e vidi le sue spalle vestite già de' raggi del pianeta che mena dritto altrui per ogne calle. Allor fu la paura un poco queta che nel lago del cor m'era durata la notte ch'i' passai con tanta pieta. E come quei che con lena affannata uscito fuor del pelago a la riva si volge a l'acqua perigliosa e guata, così l'animo mio, ch'ancor fuggiva, si volse a retro a rimirar lo passo che non lasciò già mai persona viva. Poi ch'èi posato un poco il corpo lasso, ripresi via per la piaggia diserta, sì che 'l piè fermo sempre era 'l più basso. Ed ecco, quasi al cominciar de l'erta, una lonza leggera e presta molto, che di pel macolato era coverta; e non mi si partia dinanzi al volto, anzi 'mpediva tanto il mio cammino, ch'i' fui per ritornar più volte vòlto. Temp'era dal principio del mattino, e 'l sol montava 'n sù con quelle stelle ch'eran con lui quando l'amor divino mosse di prima quelle cose belle; sì ch'a bene sperar m'era cagione di quella fiera a la gaetta pelle l'ora del tempo e la dolce stagione;"
     testo+="<hr> Nel mezzo del cammin di nostra vita mi <h1 style='color:red'>ritrovai per una selva</h1> oscura ché la diritta via era smarrita. Ahi quanto a dir qual era è cosa dura esta selva selvaggia e aspra e forte che nel pensier rinova la paura! Tant'è amara che poco è più morte; ma per trattar del ben ch'i' vi trovai, dirò de l'altre cose ch'i' v'ho scorte. Io non so ben ridir com'i' v'intrai, tant'era pien di sonno a quel punto che la verace via abbandonai. Ma poi ch'i' fui al piè d'un colle giunto, là dove terminava quella valle che m'avea di paura il cor compunto, guardai in alto, e vidi le sue spalle vestite già de' raggi del pianeta che mena dritto altrui per ogne calle. Allor fu la paura un poco queta che nel lago del cor m'era durata la notte ch'i' passai con tanta pieta. E come quei che con lena affannata uscito fuor del pelago a la riva si volge a l'acqua perigliosa e guata, così l'animo mio, ch'ancor fuggiva, si volse a retro a rimirar lo passo che non lasciò già mai persona viva. Poi ch'èi posato un poco il corpo lasso, ripresi via per la piaggia diserta, sì che 'l piè fermo sempre era 'l più basso. Ed ecco, quasi al cominciar de l'erta, una lonza leggera e presta molto, che di pel macolato era coverta; e non mi si partia dinanzi al volto, anzi 'mpediva tanto il mio cammino, ch'i' fui per ritornar più volte vòlto. Temp'era dal principio del mattino, e 'l sol montava 'n sù con quelle stelle ch'eran con lui quando l'amor divino mosse di prima quelle cose belle; sì ch'a bene sperar m'era cagione di quella fiera a la gaetta pelle l'ora del tempo e la dolce stagione;"
     testo+="<hr> Nel mezzo del cammin di nostra vita mi ritrovai per una selva oscura ché la diritta via era smarrita. Ahi quanto a dir qual era è cosa dura esta selva selvaggia e aspra e forte che nel pensier rinova la paura! <span style='font-weight:bold'>Tant'è amara che poco è più morte; ma per trattar del ben ch'i' vi trovai, dirò de l'altre cose ch'i' v'ho scorte.</span> Io non so ben ridir com'i' v'intrai,tant'era pien di sonno a quel punto che la verace via abbandonai.  Ma poi ch'i' fui al piè d'un colle giunto, là dove terminava quella valle che m'avea di paura il cor compunto, guardai in alto, e vidi le sue spalle vestite già de' raggi del pianeta che mena dritto altrui per ogne calle. Allor fu la paura un poco queta che nel lago del cor m'era durata la notte ch'i' passai con tanta pieta. E come quei che con lena affannata uscito fuor del pelago a la riva si volge a l'acqua perigliosa e guata, così l'animo mio, ch'ancor fuggiva, si volse a retro a rimirar lo passo che non lasciò già mai persona viva. Poi ch'èi posato un poco il corpo lasso, ripresi via per la piaggia diserta, sì che 'l piè fermo sempre era 'l più basso. Ed ecco, quasi al cominciar de l'erta, una lonza leggera e presta molto, che di pel macolato era coverta; e non mi si partia dinanzi al volto, anzi 'mpediva tanto il mio cammino, ch'i' fui per ritornar più volte vòlto. Temp'era dal principio del mattino, e 'l sol montava 'n sù con quelle stelle ch'eran con lui quando l'amor divino mosse di prima quelle cose belle; sì ch'a bene sperar m'era cagione di quella fiera a la gaetta pelle l'ora del tempo e la dolce stagione;"
     testo+="<hr> Nel mezzo del cammin di nostra vita mi <i>ritrovai per una selva oscura ché la diritta via era smarrita. Ahi quanto a dir qual era è cosa</i> dura esta selva selvaggia e aspra e forte che nel pensier rinova la paura! Tant'è amara che poco è più morte; ma per trattar del ben ch'i' vi trovai, dirò de l'altre cose ch'i' v'ho scorte. Io non so ben ridir com'i' v'intrai, tant'era pien di sonno a quel punto che la verace via abbandonai. Ma poi ch'i' fui al piè d'un colle giunto, là dove terminava quella valle che m'avea di paura il cor compunto, guardai in alto, e vidi le sue spalle vestite già de' raggi del pianeta che mena dritto altrui per ogne calle. Allor fu la paura un poco queta che nel lago del cor m'era durata la notte ch'i' passai con tanta pieta. E come quei che con lena affannata uscito fuor del pelago a la riva si volge a l'acqua perigliosa e guata, così l'animo mio, ch'ancor fuggiva, si volse a retro a rimirar lo passo che non lasciò già mai persona viva. Poi ch'èi posato un poco il corpo lasso, ripresi via per la piaggia diserta, sì che 'l piè fermo sempre era 'l più basso. Ed ecco, quasi al cominciar de l'erta, una lonza leggera e presta molto, che di pel macolato era coverta; e non mi si partia dinanzi al volto, anzi 'mpediva tanto il mio cammino, ch'i' fui per ritornar più volte vòlto. Temp'era dal principio del mattino, e 'l sol montava 'n sù con quelle stelle ch'eran con lui quando l'amor divino mosse di prima quelle cose belle; sì ch'a bene sperar m'era cagione di quella fiera a la gaetta pelle l'ora del tempo e la dolce stagione;"
-    testo+="<hr> Nel mezzo del cammin di nostra vita mi ritrovai per una selva oscura ché la diritta via era smarrita. Ahi quanto a dir qual era è cosa dura esta selva selvaggia e aspra e forte che nel pensier rinova la paura! Tant'è amara che poco è più morte; ma per trattar del ben ch'i' vi trovai, dirò de l'altre cose ch'i' v'ho scorte. Io non so ben ridir com'i' v'intrai, tant'era pien di sonno a quel punto che la verace via abbandonai. Ma poi ch'i' fui al piè d'un colle giunto, là dove terminava quella valle che m'avea di paura il cor compunto, guardai in alto, e vidi le sue spalle vestite già de' raggi del pianeta che mena dritto altrui per ogne calle. Allor fu la paura un poco queta che nel lago del cor m'era durata la notte ch'i' passai con tanta pieta. E come quei che con lena affannata uscito fuor del pelago a la riva si volge a l'acqua perigliosa e guata, così l'animo mio, ch'ancor fuggiva, si volse a retro a rimirar lo passo che non lasciò già mai persona viva. Poi ch'èi posato un poco il corpo lasso, ripresi via per la piaggia diserta, sì che 'l piè fermo sempre era 'l più basso. Ed ecco, quasi al cominciar de l'erta, una lonza leggera e presta molto, che di pel macolato era coverta; e non mi si partia dinanzi al volto, anzi 'mpediva tanto il mio cammino, ch'i' fui per ritornar più volte vòlto. Temp'era dal principio del mattino, e 'l sol montava 'n sù con quelle stelle ch'eran con lui quando l'amor divino mosse di prima quelle cose belle; sì ch'a bene sperar m'era cagione di quella fiera a la gaetta pelle l'ora del tempo e la dolce stagione;"
+    testo+="<hr> Nel mezzo del cammin di nostra vita mi ritrovai per una selva oscura ché la diritta via era smarrita. Ahi quanto a dir qual era è cosa dura esta  selva selvaggia e aspra e forte che nel pensier rinova la paura! Tant'è amara che poco è più morte; ma per trattar del ben ch'i' vi trovai, dirò de l'altre cose ch'i' v'ho scorte. Io non so ben ridir com'i' v'intrai, tant'era pien di sonno a quel punto che la verace via abbandonai. Ma poi ch'i' fui al piè d'un colle giunto, là dove terminava quella valle che m'avea di paura il cor compunto, guardai in alto, e vidi le sue spalle vestite già de' raggi del pianeta che mena dritto altrui per ogne calle. Allor fu la paura un poco queta che nel lago del cor m'era durata la notte ch'i' passai con tanta pieta. E come quei che con lena affannata uscito fuor del pelago a la riva si volge a l'acqua perigliosa e guata, così l'animo mio, ch'ancor fuggiva, si volse a retro a rimirar lo passo che non lasciò già mai persona viva. Poi ch'èi posato un poco il corpo lasso, ripresi via per la piaggia diserta, sì che 'l piè fermo sempre era 'l più basso. Ed ecco, quasi al cominciar de l'erta, una lonza leggera e presta molto, che di pel macolato era coverta; e non mi si partia dinanzi al volto, anzi 'mpediva tanto il mio cammino, ch'i' fui per ritornar più volte vòlto. Temp'era dal principio del mattino, e 'l sol montava 'n sù con quelle stelle ch'eran con lui quando l'amor divino mosse di prima quelle cose belle; sì ch'a bene sperar m'era cagione di quella fiera a la gaetta pelle l'ora del tempo e la dolce stagione;"
 
     var pos=0;
     var lastPos=0;
@@ -123,27 +166,39 @@
     temp.remove();
 
     var page = 1;
+    var changePage=false;
+
     while (pos>=0){
       pos=testo.indexOf(" ",pos+1);
       if (pos>0){
+
         var w=testo.substr(lastPos,pos-lastPos+1);
         w = w.replace(/-##-/g," ");
         t.append(w);
 
-
         //add a new page
-        if (t.outerHeight()<t.get(0).scrollHeight || t.outerWidth()<t.get(0).scrollWidth){
+        if (changePage || t.outerHeight()<t.get(0).scrollHeight || t.outerWidth()<t.get(0).scrollWidth){
+
+          changePage=false;
+
           pos=lastPos;
           var p=vacca.clone();
           p.append(strVacca);
           $("body").append("page "+page);
+
           page++;
 
           $("body").append(p);
           t.empty();
           strVacca="";
+
         } else {
-          strVacca+=w;
+
+          if(w.trim() === "!break!"){
+            changePage=true;
+          }else{
+            strVacca+=w;
+          }
           lastPos=pos+1;
         }
       } else {

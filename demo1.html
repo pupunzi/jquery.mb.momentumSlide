@@ -244,8 +244,6 @@
       onStart:function(el){},
       onBeforeEnd:function(el){
 
-        console.debug(el.oldPage);
-
         if (el.oldPage)
           $(el.oldPage).find("article:first").fadeOut();
         scroll(el.actualPage)
