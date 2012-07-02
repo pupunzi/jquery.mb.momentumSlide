@@ -308,6 +308,7 @@ $.fn.CSSAnimate=function(a,b,h,i,e){return this.each(function(){var d=$(this);if
 
       var changePage= el.opt.direction == "h" ? checkPageX : checkPageY;
 
+      //todo
       el.oldPage = el.page;
 
       if(changePage){
@@ -322,6 +323,7 @@ $.fn.CSSAnimate=function(a,b,h,i,e){return this.each(function(){var d=$(this);if
         }
       }
 
+      //todo
       if(el.page != el.oldPage)
         el.oldPage = el.pages.eq(el.oldPage);
 
