@@ -71,7 +71,8 @@ $.fn.CSSAnimate=function(a,b,h,i,e){return this.each(function(){var d=$(this);if
       onBeforeEnd:function(el){},
       onEnd:function(el){},
       onBounceStart:function(el){},
-      onBounceEnd:function(el){}
+      onBounceEnd:function(el){},
+      onGoTo: function(el){}
     },
 
     init: function(opt){
@@ -92,6 +93,8 @@ $.fn.CSSAnimate=function(a,b,h,i,e){return this.each(function(){var d=$(this);if
 
         var el= this;
         var $el= $(this);
+
+        $el.addClass(".mbMomentumSlider");
 
         if(typeof arg[0] == "string"){
           switch(arg[0]){
@@ -130,9 +133,9 @@ $.fn.CSSAnimate=function(a,b,h,i,e){return this.each(function(){var d=$(this);if
         el.opt.id = el.id ? el.id : "moms_"+ new Date().getTime();
         $.extend (el.opt, $.mbMomentumSlide.defaults,opt);
 
-        $('img', $el).bind('dragstart.mbMomentum_'+el.opt.id, function(event) { event.preventDefault(); });
+        $('img', $el).bind('dragstart.mbMomentum_'+el.opt.id, function(event){event.preventDefault();});
 
-        var wrapper= $("<div/>").addClass("mbScrollWrapper_"+el.opt.id).css({position:"relative", lineHeight:0, margin:0}); //, "-webkit-transform":"translate3d(0,0,0)", "-moz-transform": "translate3d(0,0,0)"
+        var wrapper= $("<div/>").addClass("mbScrollWrapper_"+el.opt.id).css({position:"relative", lineHeight:0, margin:0});
         $el.wrapInner(wrapper);
         $el.css({overflow:"hidden"});
 
@@ -159,10 +162,12 @@ $.fn.CSSAnimate=function(a,b,h,i,e){return this.each(function(){var d=$(this);if
         $el.unbind(events.move+".mbMomentum_"+el.opt.id).bind(events.move+".mbMomentum_"+el.opt.id, function(e){$.mbMomentumSlide.move(e,el);});
         $(document).unbind(events.end+".mbMomentum_"+el.opt.id).bind(events.end+".mbMomentum_"+el.opt.id, function(){$.mbMomentumSlide.end(el);});
 
-        $(window).unbind(events.windowResize+".mbMomentum_"+el.opt.id).bind(events.windowResize+".mbMomentum_"+el.opt.id, function(){$.mbMomentumSlide.refresh(el);});
+        $(window).unbind(events.windowResize+".mbMomentum_"+el.opt.id).bind(events.windowResize+".mbMomentum_"+el.opt.id, function(){
+          $.mbMomentumSlide.refresh(el);
+        });
 
         if(el.opt.activateKeyboard)
-          $(document).bind("keydown", function(e){
+          $(document).bind("keydown."+el.opt.id, function(e){
             var key= e.which;
 
             if(key==37){
@@ -177,8 +182,14 @@ $.fn.CSSAnimate=function(a,b,h,i,e){return this.each(function(){var d=$(this);if
           $.mbMomentumSlide.buildIndex(el);
         }
 
-        if(typeof el.opt.onInit == "function")
+        if(typeof el.opt.onInit === "function")
           el.opt.onInit(el);
+
+        $el.bind("goto."+".mbMomentum_"+el.opt.id,function(e){
+          if(typeof el.opt.onGoTo === "function")
+            el.opt.onGoTo(el);
+        });
+
 
         $.mbMomentumSlide.goTo(el,1);
 
@@ -370,7 +381,10 @@ $.fn.CSSAnimate=function(a,b,h,i,e){return this.each(function(){var d=$(this);if
       $.mbMomentumSlide.goTo(el,el.page+1);
     },
 
-    goTo:function(el,idx){
+    goTo:function(el,idx,animate){
+
+      if(animate === undefined)
+        animate = true;
 
       var $el = $(el);
       idx = idx-1;
@@ -381,7 +395,11 @@ $.fn.CSSAnimate=function(a,b,h,i,e){return this.each(function(){var d=$(this);if
 
       el.actualPage = el.pages[el.page];
 
-      $(el.actualPage).find("article:first").not(":visible").fadeIn(1000);
+      var event = $.Event("goto");
+      event.el = el;
+      $(el).trigger(event);
+
+      //$(el.actualPage).find("article:first").not(":visible").fadeIn(1000);
 
       var pos= el.opt.direction == "h" ? -($el.outerWidth()*el.page) : -($el.outerHeight()*el.page);
       var css = el.opt.direction == "h" ? {marginLeft:pos} : {marginTop:pos};
@@ -391,8 +409,9 @@ $.fn.CSSAnimate=function(a,b,h,i,e){return this.each(function(){var d=$(this);if
       if(typeof el.opt.onBeforeEnd == "function")
         el.opt.onBeforeEnd(el);
 
+      var duration = animate?el.opt.duration:1;
 
-      el.container.CSSAnimate(css,el.opt.duration, ease, "all", function(){
+      el.container.CSSAnimate(css,duration, ease, "all", function(){
 
         if(typeof el.opt.onEnd == "function")
           el.opt.onEnd(el);
