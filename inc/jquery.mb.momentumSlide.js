@@ -416,7 +416,7 @@ $.fn.CSSAnimate=function(a,b,h,i,e){return this.each(function(){var d=$(this);if
         if(typeof el.opt.onEnd == "function")
           el.opt.onEnd(el);
 
-        $("body").clearUnselectable();
+        //$("body").clearUnselectable();
         el.locked=false;
 
       });
