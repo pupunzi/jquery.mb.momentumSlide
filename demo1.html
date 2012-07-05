@@ -59,10 +59,11 @@
     height: auto;
   }
   #wrapper{
-    position:absolute;
+    position:relative;
     background: #ccc;
+    margin: auto;
     overflow:hidden;
-    width:100%;
+    width:800px;
     height:100%;
     font: 24px/28px Arial, Helvetica, sans-serif;
   }
@@ -90,6 +91,12 @@
     height:100%;
     -moz-box-sizing:border-box;
     box-sizing:border-box;
+  }
+
+  h1{
+    position: absolute;
+    z-index: 3;
+    font-size: 1.5em
   }
 
   .page .pageContent article{
@@ -196,22 +203,13 @@
 
 <script>
   $(function(){
-
-    /*
-     if (self.location.href == top.location.href){
-     var logo=$("<a id='pupunzi' href='http://pupunzi.com' style='position:fixed;top:5px;right:10px;z-index:1000'><img id='logo' border='0' src='http://pupunzi.com/images/logo.png' alt='mb.ideas.repository'></a>");
-     $("body").prepend(logo);
-     $("#logo").fadeIn();
-     }
-     */
-
     setTimeout(function(){window.scrollTo(0, 1);}, 0);
-
 
     function scroll(el){
 
       if(! $(el.content).children("article").length || $(el.content).children(".scroll").length )
         return;
+
 
       var scroll = $("<div/>").addClass("scroll");
       $(el.content).find("article").wrap(scroll);
@@ -230,6 +228,7 @@
         $("article:first", $(el)).fadeIn();
       },
       onDrag:function(el,dir){
+
         switch (dir){
           case "right":
             var nextPage= $.mbMomentumSlide.getNextPage(el).get(0);
@@ -241,11 +240,10 @@
             $(prevPage).find("article:first").not(":visible").fadeIn(1000);
         }
       },
-      onStart:function(el){},
       onBeforeEnd:function(el){
 
-        if (el.oldPage)
-          $(el.oldPage).find("article:first").fadeOut();
+        if (el.oldPage && el.oldPage != el.page)
+          $(el.pages.eq(el.oldPage)).find("article:first").fadeOut();
         scroll(el.actualPage)
       }
     });
@@ -264,7 +262,9 @@
       },
       onBounceEnd:function(el){
         $(el).momentumSlide('end');
-      },onDrag:function(el,dir){
+      },
+
+      onDrag:function(el,dir){
 
         switch (dir){
           case "right":
@@ -277,14 +277,18 @@
             $(prevPage).find("article:first").not(":visible").fadeIn(1000);
         }
       },
-      onStart:function(el){
-      },
       onBeforeEnd:function(el){
-        if (el.oldPage)
-          $(el.oldPage).find("article:first").fadeOut();
+        if (el.oldPage && el.oldPage != el.page)
+          $(el.pages.eq(el.oldPage)).find("article:first").fadeOut();
         scroll(el.actualPage)
       }
     });
+
+    $(window).resize(function(){
+
+      $("#wrapper").width($(window).width());
+
+    })
   })
 </script>
 
@@ -297,6 +301,7 @@
     <div class="page">
 
       <article class="col">
+        <h1>Section 1</h1>
         <h2>mb momentum Slide</h2>
         <p>Take a look at this page on your mobile or tablet</p>
         <img style="width: 200px; height: 200px;" src="http://qbox.it/qrcodeImage.jpeg?o=image%2Fjpeg&d=http://dl.dropbox.com/u/1976976/jquery.mb.momentumSlide/demo.html&e=L&t=0&m=0&s=10" >
@@ -324,11 +329,12 @@
     </div>
 
     <div class="page" >
-      <div id="slider2" class="slider" >
+      <h1>Section 2</h1>
 
+      <div id="slider2" class="slider" >
         <div class="page">
           <article class="col">
-            <h2>Section</h2>
+            <h2>Article 1</h2>
             <p>Take a look at this page on your mobile or tablet</p>
             <img style="width: 200px; height: 200px;" src="http://qbox.it/qrcodeImage.jpeg?o=image%2Fjpeg&d=http://dl.dropbox.com/u/1976976/jquery.mb.momentumSlide/demo.html&e=L&t=0&m=0&s=10" >
             <p>drag this page right to left...</p>
@@ -353,9 +359,9 @@
           </article>
         </div>
 
-        <div class="page"><article>Sub page 2</article></div>
-        <div class="page"><article>Sub page 3</article></div>
-        <div class="page"><article>Sub page 4</article></div>
+        <div class="page"><article><h2>Article 2</h2></article></div>
+        <div class="page"><article><h2>Article 3</h2></article></div>
+        <div class="page"><article><h2>Article 4</h2></article></div>
       </div>
 
 
@@ -367,10 +373,18 @@
 
     </div>
 
-    <div class="page"><article> page 3</article></div>
-    <div class="page"><article> page 4</article></div>
-    <div class="page"><article> page 5</article></div>
-    <div class="page"><article> page 6</article></div>
+    <div class="page"><article>
+      <h1>Section 3</h1>
+      </article></div>
+    <div class="page"><article>
+      <h1>Section 4</h1>
+      </article></div>
+    <div class="page"><article>
+      <h1>Section 5</h1>
+      </article></div>
+    <div class="page"><article>
+      <h1>Section 6</h1>
+    </article></div>
   </div>
 
   <div id="commands" style="position: absolute; bottom:10px; left:10px;">
@@ -380,7 +394,5 @@
   </div>
 
 </div>
-<div style="height: 420px;"></div>
-
 </body>
 </html>

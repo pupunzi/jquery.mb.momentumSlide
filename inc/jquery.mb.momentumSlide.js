@@ -308,8 +308,7 @@ $.fn.CSSAnimate=function(a,b,h,i,e){return this.each(function(){var d=$(this);if
 
       var changePage= el.opt.direction == "h" ? checkPageX : checkPageY;
 
-      //todo
-      el.oldPage = el.page;
+      var oldPage = el.page;
 
       if(changePage){
         var canMove = el.opt.direction == "h" ? el.endX<el.startX : el.endY<el.startY;
@@ -323,9 +322,8 @@ $.fn.CSSAnimate=function(a,b,h,i,e){return this.each(function(){var d=$(this);if
         }
       }
 
-      //todo
-      if(el.page != el.oldPage)
-        el.oldPage = el.pages.eq(el.oldPage);
+      if(el.page != oldPage)
+        el.oldPage = oldPage;
 
       $.mbMomentumSlide.goTo(el,el.page+1);
       el.anchored=false;
@@ -347,14 +345,28 @@ $.fn.CSSAnimate=function(a,b,h,i,e){return this.each(function(){var d=$(this);if
     },
 
     next:function(el){
+
+      el.oldPage = el.page;
+
+      if(typeof el.opt.onDrag == "function")
+        el.opt.onDrag(el,"right");
+
       if(el.page < el.pages.length-1)
         el.page++;
+
       $.mbMomentumSlide.goTo(el,el.page+1);
     },
 
     prev:function(el){
+
+      el.oldPage = el.page;
+
+      if(typeof el.opt.onDrag == "function")
+        el.opt.onDrag(el,"left");
+
       if(el.page > 0)
         el.page--;
+
       $.mbMomentumSlide.goTo(el,el.page+1);
     },
 
@@ -368,6 +380,8 @@ $.fn.CSSAnimate=function(a,b,h,i,e){return this.each(function(){var d=$(this);if
         el.page=0;
 
       el.actualPage = el.pages[el.page];
+
+      $(el.actualPage).find("article:first").not(":visible").fadeIn(1000);
 
       var pos= el.opt.direction == "h" ? -($el.outerWidth()*el.page) : -($el.outerHeight()*el.page);
       var css = el.opt.direction == "h" ? {marginLeft:pos} : {marginTop:pos};
