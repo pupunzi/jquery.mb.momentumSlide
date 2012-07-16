@@ -34,8 +34,7 @@
 
  $(this).CSSAnimate({top: t, left:l, width:w, height:h}, 2000, "ease-out", "all", function() {el.anim();})
  */
-$.fn.CSSAnimate=function(a,b,h,i,e){return this.each(function(){var d=$(this);if(0!==d.length&&a){"function"==typeof b&&(e=b);"function"==typeof h&&(e=h);"function"==typeof i&&(e=i);if("string"==typeof b)for(var j in $.fx.speeds)if(b==j){b=$.fx.speeds[j];break}else b=null;b||(b=$.fx.speeds._default);h||(h="cubic-bezier(0.65,0.03,0.36,0.72)");i||(i="all");if(jQuery.support.transition){var c="",f="transitionEnd";$.browser.webkit?(c="-webkit-",f="webkitTransitionEnd"):$.browser.mozilla?(c="-moz-",f= "transitionend"):$.browser.opera?(c="-o-",f="oTransitionEnd"):$.browser.msie&&(c="-ms-",f="msTransitionEnd");for(var g in a)"transform"===g&&(a[c+"transform"]=a[g],delete a[g]),"transform-origin"===g&&(a[c+"transform-origin"]=a[g],delete a[g]);d.css(c+"transition-property",i);d.css(c+"transition-duration",b+"ms");d.css(c+"transition-timing-function",h);setTimeout(function(){d.css(a)},0);var k=function(){d.get(0).removeEventListener(f,k,!1);d.css(c+"transition","");"function"==typeof e&&e()};d.get(0).addEventListener(f, k,!1)}else d.animate(a,b,e)}})};$.fn.CSSAnimateStop=function(){var a="";$.browser.webkit?a="-webkit-":$.browser.mozilla?a="-moz-":$.browser.opera?a="-o-":$.browser.msie&&(a="-ms-");$(this).css(a+"transition","")};$.support.transition=function(){var a=(document.body||document.documentElement).style;return void 0!==a.transition||void 0!==a.WebkitTransition||void 0!==a.MozTransition||void 0!==a.MsTransition||void 0!==a.OTransition}();
-
+$.fn.CSSAnimate=function(a,b,i,j,g,f){return this.each(function(){var c=$(this);if(0!==c.length&&a){"function"==typeof b&&(f=b,b=$.fx.speeds._default);"function"==typeof i&&(f=i,i=0);"function"==typeof j&&(f=j,j="cubic-bezier(0.65,0.03,0.36,0.72)");"function"==typeof g&&(f=g,g="all");if("string"==typeof b)for(var k in $.fx.speeds)if(b==k){b=$.fx.speeds[k];break}else b=null;if($.support.transition){var d="",h="transitionEnd";$.browser.webkit?(d="-webkit-",h="webkitTransitionEnd"):$.browser.mozilla? (d="-moz-",h="transitionend"):$.browser.opera?(d="-o-",h="oTransitionEnd"):$.browser.msie&&(d="-ms-",h="msTransitionEnd");for(e in a)if("transform"===e&&(a[d+"transform"]=a[e],delete a[e]),"transform-origin"===e)a[d+"transform-origin"]=a[e],delete a[e];"transform"===g&&(g=d+g);c.CSSAnimateStop();c.css(d+"transition-property",g);c.css(d+"transition-duration",b+"ms");c.css(d+"transition-delay",i+"ms");c.css(d+"transition-timing-function",j);c.css(d+"backface-visibility","hidden");setTimeout(function(){c.css(a); c.off(h+".cssanim");c.on(h+".cssanim",function(a){c.off(h+".cssanim");c.css(d+"transition","");typeof f=="function"&&f();a.stopPropagation();return false})},10)}else{for(var e in a)"transform"===e&&delete a[e];for(e in a)"auto"===a[e]&&delete a[e];if(!f||"string"===typeof f)f="linear";c.animate(a,b,f)}}})}; $.fn.CSSAnimateStop=function(){var a="",b="transitionEnd";$.browser.webkit?(a="-webkit-",b="webkitTransitionEnd"):$.browser.mozilla?(a="-moz-",b="transitionend"):$.browser.opera?(a="-o-",b="oTransitionEnd"):$.browser.msie&&(a="-ms-",b="msTransitionEnd");$(this).css(a+"transition","");$(this).off(b+".cssanim")}; $.support.transition=function(){var a=(document.body||document.documentElement).style;return void 0!==a.transition||void 0!==a.WebkitTransition||void 0!==a.MozTransition||void 0!==a.MsTransition||void 0!==a.OTransition}();
 /*
  *
  * jQuery.mb.components: jquery.mb.momentumSlide
@@ -133,7 +132,7 @@ $.fn.CSSAnimate=function(a,b,h,i,e){return this.each(function(){var d=$(this);if
         el.opt.id = el.id ? el.id : "moms_"+ new Date().getTime();
         $.extend (el.opt, $.mbMomentumSlide.defaults,opt);
 
-        $('img', $el).bind('dragstart.mbMomentum_'+el.opt.id, function(event){event.preventDefault();});
+        $('img', $el).on('dragstart.mbMomentum_'+el.opt.id, function(event){event.preventDefault();});
 
         var wrapper= $("<div/>").addClass("mbScrollWrapper_"+el.opt.id).css({position:"relative", lineHeight:0, margin:0});
         $el.wrapInner(wrapper);
@@ -158,16 +157,16 @@ $.fn.CSSAnimate=function(a,b,h,i,e){return this.each(function(){var d=$(this);if
         el.w=el.container.outerWidth(true) - el.pages.outerWidth();
         el.h=el.container.outerHeight(true) - el.pages.outerHeight();
 
-        $el.unbind(events.start+".mbMomentum_"+el.opt.id).bind(events.start+".mbMomentum_"+el.opt.id,function(e){$.mbMomentumSlide.start(e,el);});
-        $el.unbind(events.move+".mbMomentum_"+el.opt.id).bind(events.move+".mbMomentum_"+el.opt.id, function(e){$.mbMomentumSlide.move(e,el);});
-        $(document).unbind(events.end+".mbMomentum_"+el.opt.id).bind(events.end+".mbMomentum_"+el.opt.id, function(){$.mbMomentumSlide.end(el);});
+        $el.off(events.start+".mbMomentum_"+el.opt.id).on(events.start+".mbMomentum_"+el.opt.id,function(e){$.mbMomentumSlide.start(e,el);});
+        $el.off(events.move+".mbMomentum_"+el.opt.id).on(events.move+".mbMomentum_"+el.opt.id, function(e){$.mbMomentumSlide.move(e,el);});
+        $(document).off(events.end+".mbMomentum_"+el.opt.id).on(events.end+".mbMomentum_"+el.opt.id, function(){$.mbMomentumSlide.end(el);});
 
-        $(window).unbind(events.windowResize+".mbMomentum_"+el.opt.id).bind(events.windowResize+".mbMomentum_"+el.opt.id, function(){
+        $(window).off(events.windowResize+".mbMomentum_"+el.opt.id).on(events.windowResize+".mbMomentum_"+el.opt.id, function(){
           $.mbMomentumSlide.refresh(el);
         });
 
         if(el.opt.activateKeyboard)
-          $(document).bind("keydown."+el.opt.id, function(e){
+          $(document).on("keydown."+el.opt.id, function(e){
             var key= e.which;
 
             if(key==37){
@@ -185,7 +184,7 @@ $.fn.CSSAnimate=function(a,b,h,i,e){return this.each(function(){var d=$(this);if
         if(typeof el.opt.onInit === "function")
           el.opt.onInit(el);
 
-        $el.bind("goto."+".mbMomentum_"+el.opt.id,function(e){
+        $el.on("goto."+".mbMomentum_"+el.opt.id,function(e){
           if(typeof el.opt.onGoTo === "function")
             el.opt.onGoTo(el);
         });
