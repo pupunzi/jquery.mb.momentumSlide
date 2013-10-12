@@ -14,7 +14,7 @@
  *  http://www.opensource.org/licenses/mit-license.php
  *  http://www.gnu.org/licenses/gpl.html
  *
- *  last modified: 25/04/13 22.58
+ *  last modified: 12/10/13 22.18
  *  *****************************************************************************
  */
 
@@ -51,6 +51,7 @@ events.windowResize = hasTouch && isiOs ? "orientationchange" : "resize";
 			direction       : "h",
 			waitBefore      : 100,
 			tollerance      : "auto",
+			changePoint     : 3,
 			propagate       : true,
 			anchor          : 0,
 			pagination      : 5,
@@ -150,7 +151,7 @@ events.windowResize = hasTouch && isiOs ? "orientationchange" : "resize";
 				});
 
 				if (el.opt.activateKeyboard)
-					$(document).bind("keydown." + el.opt.id, function (e) {
+					$(document).on("keydown." + el.opt.id, function (e) {
 						var key = e.which;
 
 						if (key == 37) {
@@ -166,7 +167,7 @@ events.windowResize = hasTouch && isiOs ? "orientationchange" : "resize";
 				}
 
 				if (typeof el.opt.onGoTo === "function")
-					$el.bind("goto." + ".mbMomentum_" + el.opt.id, function (e) {
+					$el.on("goto." + ".mbMomentum_" + el.opt.id, function (e) {
 						el.opt.onGoTo(el);
 					});
 
@@ -181,7 +182,7 @@ events.windowResize = hasTouch && isiOs ? "orientationchange" : "resize";
 		start: function (e, el) {
 
 			var $el = $(el);
-			$el.unbind(events.move + ".mbMomentum_" + el.opt.id).bind(events.move + ".mbMomentum_" + el.opt.id, function (e) {$.mbMomentumSlide.move(e, el);});
+			$el.off(events.move + ".mbMomentum_" + el.opt.id).on(events.move + ".mbMomentum_" + el.opt.id, function (e) {$.mbMomentumSlide.move(e, el);});
 
 			el.container.CSSAnimateStop();
 
@@ -288,7 +289,7 @@ events.windowResize = hasTouch && isiOs ? "orientationchange" : "resize";
 
 
 			var $el = $(el);
-			$el.unbind(events.move + ".mbMomentum_" + el.opt.id);
+			$el.off(events.move + ".mbMomentum_" + el.opt.id);
 
 			clearTimeout(el.timer);
 			el.canScroll = false;
@@ -301,7 +302,7 @@ events.windowResize = hasTouch && isiOs ? "orientationchange" : "resize";
 
 			el.pageW = $el.outerWidth();
 			el.pageH = $el.outerHeight();
-			el.changePoint = el.opt.direction == "h" ? el.pageW / 2 : el.pageH / 2;
+			el.changePoint = el.opt.direction == "h" ? el.pageW / el.opt.changePoint : el.pageH / el.opt.changePoint;
 
 			var checkPageX = Math.abs(el.startX - el.endX) > el.changePoint && parseFloat(el.container.css("margin-left")) < 0 && el.pages.eq(el.page).length > 0;
 			var checkPageY = Math.abs(el.startY - el.endY) > el.changePoint && parseFloat(el.container.css("margin-top")) < 0 && el.pages.eq(el.page).length > 0;
